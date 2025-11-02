@@ -1,0 +1,172 @@
+# Excel → CSV Konvertor pre HR dáta
+
+Webová aplikácia na konverziu Excel súborov do CSV formátu s automatickými transformáciami, validáciami a číselníkmi pre slovenské HR dáta.
+
+## 🎯 Funkcie
+
+### Základné spracovanie
+- ✅ Načítanie XLSX/XLS súborov
+- ✅ Hlavička v riadku 3 (A3), dáta od riadku 4 (A4)
+- ✅ Spracovanie len zelených riadkov v stĺpci A
+- ✅ STOP pri prvej prázdnej bunke v stĺpci A
+- ✅ Rozsah 39 stĺpcov (A-AM, ignoruje Q-R)
+
+### Automatické transformácie
+- ✅ **Osobné čísla**: Postupné generovanie od zadaného čísla
+- ✅ **PPV kódy**: DVP→5, DPC→4, HPP→2, DBPS→6
+- ✅ **Rodné číslo**: Bez lomítka, zachované úvodné nuly
+- ✅ **IBAN**: Automatická extrakcia účtu, predčíslia, banky
+- ✅ **SWIFT kódy**: Automatické doplnenie z číselníka NBS (31 bánk)
+- ✅ **Stredisko**: Pridanie "A" ak hodnota > 999
+- ✅ **NČZD**: Transformácia na 0/A/N
+- ✅ **Tarif**: Čiarka → bodka
+- ✅ **Dátumy**: Excel serial number → DD.MM.RRRR
+
+### Číselníky
+- 📍 **PSČ**: 450+ slovenských obcí (všetky kraje a okresy)
+- 🏦 **SWIFT**: 31 slovenských bánk (oficiálny číselník NBS 04/2022)
+- 🔄 **PPV**: Transformácie pracovných pomerov
+
+### Validácie s vizuálnym zvýraznením
+- ✅ Rodné číslo deliteľné 11
+- ✅ Rodné číslo vs dátum narodenia (ženy +50 k mesiacu)
+- ✅ IBAN MOD-97 validácia
+- ✅ Email formát
+- ✅ Dátum nástupu ≥ dnes + 1 deň
+- ✅ Trvanie do ≥ dátum nástupu
+- ✅ PSČ → návrh obce ak nesedí
+- ✅ Štát (upozornenie ak prázdny)
+
+### Editácia dát
+- ✏️ Klikateľné bunky pre úpravu (osobné číslo, RČ, IBAN, email, štát)
+- 🔄 Automatický prepočet pri zmene IBAN
+- 🔴 Červené zvýraznenie chýb
+- 🟠 Oranžové upozornenia a návrhy
+
+### Export CSV
+- 📊 Tabuľkový náhľad prvých 10 záznamov
+- 🔤 Výber kódovania (UTF-8 / Windows-1250)
+- ✅ Bodkočiarka ako oddeľovač
+- 📥 Download link
+
+## 🚀 Použitie
+
+### Online (GitHub Pages)
+1. Otvor [https://TVOJE-MENO.github.io/excel-csv-converter](https://TVOJE-MENO.github.io/excel-csv-converter)
+2. Zadaj začiatočné osobné číslo
+3. Nahraj Excel súbor
+4. Skontroluj a uprav dáta
+5. Vygeneruj a stiahni CSV
+
+### Lokálne
+1. Stiahni `index.html`
+2. Otvor v prehliadači (Chrome, Firefox, Edge)
+3. Funguje offline - žiadne inštalácie
+
+## 📋 Požiadavky na Excel súbor
+
+### Štruktúra
+- **Riadok 1-2**: Ignorované (pomocné údaje)
+- **Riadok 3**: Hlavička (začína v A3)
+- **Riadok 4+**: Dáta
+
+### Formátovanie
+- **Stĺpec A**: Zelená farba = riadok sa spracuje
+- **Stĺpec A**: Prázdna bunka = STOP (všetko ďalej sa ignoruje)
+- **Stĺpce Q-R**: Ignorované (kontrolné stĺpce)
+
+### Mapovanie stĺpcov Excel → CSV
+
+| Excel | CSV | Popis | Transformácia |
+|-------|-----|-------|---------------|
+| A | spolo?nos? | Spoločnosť | Trim medzier |
+| B | oscislo | Osobné číslo | Generované postupne |
+| C | DOBPS/DVP/HPP | Typ PP | Bez zmeny |
+| D | - | Kontrolný | **Ignoruje sa** |
+| E | kodppv | Kód PPV | Číselník (DVP→5, DPC→4) |
+| F | priezv | Priezvisko | Trim medzier |
+| G | meno | Meno | Trim medzier |
+| H | titl1 | Titul | Trim medzier |
+| I | datnarod | Dátum narodenia | DD.MM.RRRR |
+| J | statprisl | Štátna príslušnosť | Trim medzier |
+| K | rodstav | Rodinný stav | Trim medzier |
+| L | rc | Rodné číslo | Bez lomítka, 10 číslic |
+| M | - | Kontrola RČ | **Ignoruje sa** |
+| N | - | Kontrola dátumu | **Ignoruje sa** |
+| O | rodmeno | Rodné priezvisko | Trim medzier |
+| P | miestonar | Miesto narodenia | Trim medzier |
+| Q | - | Pomocný | **Ignoruje sa** |
+| R | - | Pomocný | **Ignoruje sa** |
+| S | ulica | Ulica | Trim medzier |
+| T | supcislo | Súpisné číslo | Trim medzier |
+| U | cdomu | Číslo domu | Trim medzier |
+| V | psc | PSČ | Trim medzier |
+| W | obecnazov | Obec | Trim medzier |
+| X | stat | Štát | Auto "SK" podľa PSČ |
+| Y | vzdelanie | Vzdelanie | Trim medzier |
+| Z | dôchodky | Dôchodky/invalidita | Trim medzier |
+| AA | odpocet | NČZD | 0/A/N |
+| AB | zpkod | Kód ZP | Trim medzier |
+| AC | VT/NT | VT/NT | Trim medzier |
+| AD | stredkod | Stredisko | +A ak > 999 |
+| AE | miesvyk | Miesto výkonu | Trim medzier |
+| AF | nastup | Prihlásiť od | DD.MM.RRRR |
+| AG | dobaurcita | Trvanie do | DD.MM.RRRR |
+| AH | datoop | Dátum podpisu OOP | DD.MM.RRRR |
+| AI | pracovnápozícia | Pracovná pozícia | Trim medzier |
+| AJ | isco | ISCO | Trim medzier |
+| AK | tarif | Mzdový dekrét BT | Čiarka→bodka |
+| AL | IBAN | IBAN | Bez medzier |
+| AM | ucet | Číslo účtu | Z IBAN (10 číslic) |
+| - | preducet | Predčíslie | Z IBAN (6 číslic) |
+| - | banka | Kód banky | Z IBAN (4 číslice) |
+| - | SWIFT | SWIFT kód | Z číselníka |
+| AN | email_adress | Email | Bez medzier |
+| AO | mobil | Kontakt | Trim medzier |
+
+## 🛠️ Technológie
+
+- **React 18** - UI framework
+- **XLSX.js** - Spracovanie Excel súborov
+- **Tailwind CSS** - Styling
+- **Lucide Icons** - Ikony
+
+## 📦 Inštalácia na GitHub
+
+```bash
+# 1. Vytvor nový repozitár na GitHub
+# 2. Naklonuj repozitár
+git clone https://github.com/TVOJE-MENO/excel-csv-converter.git
+cd excel-csv-converter
+
+# 3. Skopíruj index.html a README.md
+# 4. Commitni a pushni
+git add .
+git commit -m "Initial commit - Excel to CSV converter"
+git push origin main
+
+# 5. Aktivuj GitHub Pages
+# Settings → Pages → Source: main branch → Save
+```
+
+## 📝 Licencia
+
+MIT License - voľne použiteľné pre osobné aj komerčné účely.
+
+## 🐛 Známe obmedzenia
+
+- PSČ číselník obsahuje 450+ obcí (najdôležitejšie mesta a obce)
+- Pre menšie obce je potrebné manuálne doplniť štát "SK"
+- SWIFT kódy platné k 04/2022 (31 bánk)
+
+## 🤝 Podpora
+
+Pri problémoch vytvor issue na GitHub alebo kontaktuj autora.
+
+## 📊 Verzia
+
+**v1.0.0** (November 2025)
+
+---
+
+Vyvinuté pre spracovanie slovenských HR dát s dôrazom na automatizáciu a validáciu.
